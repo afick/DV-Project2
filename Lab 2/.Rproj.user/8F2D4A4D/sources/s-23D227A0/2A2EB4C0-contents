@@ -1,0 +1,83 @@
+# Data Visualization (Spring 2022)
+# Some examples to make and use functions.
+
+# Initial settings --------------------------------------------------------
+
+library(tidyverse)
+library(readxl) # read and write Excel files
+library(patchwork)
+
+# Load data ---------------------------------------------------------------
+
+df <- read_csv("data/Most-Recent-Cohorts-Institution.csv", 
+               na = "NULL")
+
+dic <- read_xlsx("data/CollegeScorecardDataDictionary.xlsx", 
+                sheet = "Institution_Data_Dictionary")
+
+# A short code to choose a variable ---------------------------------------
+
+varname <- dic %>% 
+  filter(str_detect(`NAME OF DATA ELEMENT`, "salary")) %>% 
+  select(`VARIABLE NAME`) %>% 
+  pull()
+
+test <- df %>% select(all_of(c("INSTNM", varname)))
+
+# Example 1 ---------------------------------------------------------------
+
+find_location <- function(.data, .INSTNM){
+  
+  .data %>% 
+    filter(INSTNM == .INSTNM) %>% 
+    select(INSTNM, LATITUDE, LONGITUDE)
+
+}
+
+find_location(df, "Dartmouth College")
+
+# Example 2 ---------------------------------------------------------------
+
+check_SAT <- function(.data, .control, .title){
+
+  d <- .data %>% 
+    filter(CONTROL == .control) %>% 
+    select(INSTNM, SATVRMID, SATMTMID, SATWRMID) %>% 
+    pivot_longer(2:4, names_to = "section", values_to = "score")
+  
+  ggplot(d) +
+    geom_histogram(aes(score), 
+                   color = "white") +
+    facet_wrap(~ section) + 
+    labs(title = .title)
+  
+}
+
+g1 <- check_SAT(df, 1, "Public")
+g2 <- check_SAT(df, 2, "Private (non-profit)")
+g1 / g2
+
+# Example 3 ---------------------------------------------------------------
+
+# Flag for Historically Black College and University
+HBCU <- df %>% filter(HBCU == 1)
+
+# Flag for Asian American Native American Pacific Islander-serving institution
+AANAPII <- df %>% filter(AANAPII == 1)
+
+check_SAT_mean <- function(.data, .control){
+  
+  .data %>% 
+    filter(CONTROL == .control) %>% 
+    select(INSTNM, SATVRMID, SATMTMID, SATWRMID) %>% 
+    pivot_longer(2:4, names_to = "section", values_to = "score") %>% 
+    group_by(section) %>% 
+    summarise(average_of_median = mean(score, na.rm = TRUE), 
+              .groups = "drop")
+  
+}
+
+check_SAT_mean(HBCU, 1)
+check_SAT_mean(HBCU, 2)
+check_SAT_mean(AANAPII, 1)
+check_SAT_mean(AANAPII, 2)

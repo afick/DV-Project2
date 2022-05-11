@@ -1,0 +1,285 @@
+## Data Visualization (GOVT16-QSS17) Spring 2022
+## Session 02: Data Exploration, Part 2
+##
+## Name: Alex Fick
+## Date: April 5, 2022
+
+
+# Initial Settings --------------------------------------------------------
+library(tidyverse)
+library(ggthemes)
+
+variable <- "Liberal Democracy Index"
+
+# Load Data ---------------------------------------------------------------
+
+df <- readRDS("Session02/data/V-Dem-CY-Core-v12.rds") %>% 
+  filter(year >= 1945)
+
+# Figure 1 ----------------------------------------------------------------
+
+df1 <- df %>% 
+  filter(country_name == "United States of America")
+
+ggplot(df1, aes(year, v2x_libdem)) +
+  geom_smooth(color = "blue", method = "gam") +
+  geom_point() +
+  labs(x = "Year", y = variable, 
+       title = paste0(variable, ", the United States"), 
+       subtitle = "Source: V-Dem, v12", 
+       caption = "Note: The fitted line is based on the general additive model.") +
+  theme_few()
+
+ggsave("Session02/figures/figure1.pdf", height = 8, width = 11)
+
+# Figure 2 ----------------------------------------------------------------
+
+oecd <- c("Austria",
+          "Australia",
+          "Belgium",
+          "Canada",
+          "Chile",
+          "Colombia",
+          "Czech Republic",
+          "Denmark",
+          "Estonia",
+          "Finland",
+          "France",
+          "Germany",
+          "Greece",
+          "Hungary",
+          "Iceland",
+          "Ireland",
+          "Israel",
+          "Italy",
+          "Japan",
+          "South Korea",
+          "Latvia",
+          "Lithuania",
+          "Luxembourg",
+          "Mexico",
+          "Netherlands",
+          "New Zealand",
+          "Norway",
+          "Poland",
+          "Portugal",
+          "Slovakia",
+          "Slovenia",
+          "Spain",
+          "Sweden",
+          "Switzerland",
+          "Turkey",
+          "United Kingdom",
+          "United States of America")
+
+df2 <- df %>% 
+  filter(country_name %in% oecd)
+
+ggplot(mapping = aes(year, v2x_libdem, group = country_id)) +
+  geom_line(data = df2, color = "gray") +
+  geom_point(data = df1) +
+  labs(x = "Year", y = variable, 
+       title = paste0(variable, ", OECD Countries"), 
+       subtitle = "Source: V-Dem, v12", 
+       caption = "Note: The dots are for the United States.") +
+  theme_few()
+
+ggsave("Session02/figures/figure2.pdf", height = 8, width = 11)
+
+
+# Figure 3 ----------------------------------------------------------------
+
+df3 <- df %>% 
+  filter(country_name %in% c("Japan", "United States of America", "Australia"),
+         year >= 1980)
+
+ggplot(df3, mapping = aes(country_name, v2x_libdem, group = country_id)) +
+  geom_boxplot() +
+  geom_jitter(width = 0.2, mapping = aes(color = year)) +
+  labs(x = NULL, y = variable) +
+  theme_few()
+
+ggsave("Session02/figures/figure3.pdf", height = 8, width = 11)
+
+
+# Figure 4 ----------------------------------------------------------------
+
+library(directlabels)
+
+
+ggplot(df3, mapping = aes(year, v2x_libdem, group = country_name, color = country_name)) +
+  geom_line(show.legend = FALSE) +
+  directlabels::geom_dl(mapping = aes(label = country_name), 
+                        method = "last.qp", color = "black") +
+  scale_x_continuous(breaks = seq(from = 1900, to = 2020, by = 20), limits = c(1980, 2035)) +
+  labs(x = "Year", y = variable) +
+  theme_few()
+
+ggsave("Session02/figures/figure4.pdf", height = 8, width = 11)
+
+
+# Section 5 ---------------------------------------------------------------
+
+df5 <- df3 %>% 
+  filter(country_name %in% "United States of America", year > 2000)
+
+ggplot() +
+  geom_rect(aes(xmin = 2000 + 10/12, xmax = 2008 + 10/12, ymin = -Inf, ymax = Inf),  alpha = 0.5, fill = "red") +
+  geom_rect(aes(xmin = 2008 + 10/12, xmax = 2016 + 10/12, ymin = -Inf, ymax = Inf),  alpha = 0.5, fill = "blue") +
+  geom_rect(aes(xmin = 2016 + 10/12, xmax = 2020 + 10/12, ymin = -Inf, ymax = Inf),  alpha = 0.5, fill = "red") +
+  geom_line(df5, mapping = aes(year, v2x_libdem), color = "white") +
+  geom_point(df5, mapping = aes(year, v2x_libdem), size = 5) +
+  labs(x = "Year", y = variable) + 
+  annotate(geom = "text", x = 2005, y = 0.78, label = "Bush", color = "white", fontface = "italic") +
+  annotate(geom = "text", x = 2013, y = 0.78, label = "Obama", color = "white", fontface = "italic") +
+  annotate(geom = "text", x = 2018.5, y = 0.78, label = "Trump", color = "white", fontface = "italic") +
+  theme_few()
+
+ggsave("Session02/figures/figure5.pdf", height = 8, width = 11)
+
+
+
+
+
+
+
+# Initial Settings --------------------------------------------------------
+
+library(tidyverse)
+library(ggthemes)
+
+variable <- "Liberal Democracy Index"
+
+# Load data ---------------------------------------------------------------
+
+df <- readRDS("Session02/data/V-Dem-CY-Core-v12.rds") %>% 
+  filter(year >= 1945)
+
+# Figure 1 ----------------------------------------------------------------
+
+df1 <- df %>% 
+  filter(country_name == "United States of America")
+
+ggplot(df1, aes(year, v2x_libdem)) +
+  geom_smooth(na.rm = TRUE, method = "gam") + 
+  geom_jitter(na.rm = TRUE) + 
+  labs(x = "Year",
+       y = variable, 
+       title = paste0(variable, ", the United States"),
+       subtitle = "Source: V-Dem, v12",
+       caption = "Note: The fitted line is based on the general additive model.") +
+  theme_few()
+
+# Figure 2 ----------------------------------------------------------------
+
+oecd <- c("Austria",
+          "Australia",
+          "Belgium",
+          "Canada",
+          "Chile",
+          "Colombia",
+          "Czech Republic",
+          "Denmark",
+          "Estonia",
+          "Finland",
+          "France",
+          "Germany",
+          "Greece",
+          "Hungary",
+          "Iceland",
+          "Ireland",
+          "Israel",
+          "Italy",
+          "Japan",
+          "South Korea",
+          "Latvia",
+          "Lithuania",
+          "Luxembourg",
+          "Mexico",
+          "Netherlands",
+          "New Zealand",
+          "Norway",
+          "Poland",
+          "Portugal",
+          "Slovakia",
+          "Slovenia",
+          "Spain",
+          "Sweden",
+          "Switzerland",
+          "Turkey",
+          "United Kingdom",
+          "United States of America")
+
+df2 <- df %>% 
+  filter(country_name %in% oecd)
+
+ggplot(mapping = aes(year, v2x_libdem, group = country_name)) +
+  geom_line(data = df2, color = "gray", na.rm = TRUE) + 
+  geom_jitter(data = df1, na.rm = TRUE) + 
+  labs(x = "Year",
+       y = variable, 
+       title = paste0(variable, ", OECD Countries"),
+       subtitle = "Source: V-Dem, v12",
+       caption = "Note: The dots are for the United States.") +
+  theme_few()
+
+
+# Figure 3 ----------------------------------------------------------------
+
+df3 <- df %>% 
+  filter(country_name %in% c("Australia", "Japan", "United States of America") &
+           year >= 1980)
+set.seed(12345)
+ggplot(df3, aes(country_name, v2x_libdem)) +
+  geom_boxplot(width = 0.5, na.rm = TRUE) +
+  geom_jitter(aes(color = year), na.rm = TRUE, width = .1) +
+  labs(x = NULL, 
+       y = variable) +
+  theme_few()
+
+# Figure 4 ----------------------------------------------------------------
+
+library(directlabels)
+
+ggplot(df3, aes(year, v2x_libdem)) +
+  geom_line(aes(color = country_name)) +
+  scale_x_continuous(limits = c(1980, 2035), 
+                     breaks = seq(1980, 2020, 20)) +
+  geom_dl(aes(label = country_name), method = "last.qp") +
+  guides(color = "none") +
+  labs(x = "Year",
+       y = variable) +
+  theme_few()
+
+
+# Figure 5 ----------------------------------------------------------------
+
+df5 <- df1 %>% 
+  filter(year > 2000)
+
+dftext <- data.frame(pres = c("Bush", "Obama", "Trump"),
+                     x = c(2005, 2013, 2019))
+dfrect <- data.frame(xmin = c(2000 + 5/6, 2008 + 5/6, 2016 + 5/6),
+                     xmax = c(2008 + 5/6, 2016 + 5/6, 2020 + 5/6))
+
+ggplot() +
+  geom_rect(data = dfrect, 
+            mapping = aes(xmin = xmin, 
+                xmax = xmax,
+                ymin = -Inf,
+                ymax = Inf),
+            fill = c("red", "blue", "red"),
+            alpha = 0.5) +
+  geom_line(data = df5, mapping = aes(year, v2x_libdem), color = "white") +
+  geom_point(data = df5, mapping = aes(year, v2x_libdem), size = 5) +
+  geom_text(data = dftext,
+            mapping = aes(x = x,
+                y = 0.78,
+                label = pres),
+            color = "white",
+            fontface = "italic") +
+  labs(x = "Year", 
+       y = variable) +
+  theme_few()
+
+

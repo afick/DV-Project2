@@ -1,0 +1,27 @@
+{
+    "id": "A1FF93D9",
+    "path": "~/Documents/School/First Year/Spring/QSS 17/Lab 2/scripts/AlexFick_DVProj2_script.R",
+    "project_path": "scripts/AlexFick_DVProj2_script.R",
+    "type": "r_source",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1651700422601.0,
+    "source_on_save": false,
+    "relative_order": 1,
+    "properties": {
+        "tempName": "Untitled1",
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "7,0",
+        "scrollLine": "0"
+    },
+    "folds": "50|28|55|0|\n77|29|85|0|\n",
+    "lastKnownWriteTime": 1652221670,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1652221670010,
+    "read_only": false,
+    "read_only_alternatives": []
+}
